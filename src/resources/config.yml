@@ -1,0 +1,37 @@
+api-key: '' # Google Clouds api key for Perspective API
+
+# Specify the main language of the server
+# Working languages: English (en), Spanish (es), French (fr)
+# Experimental languages: German (de), Portuguese (pt), Italian(it)
+# Setting language to all makes plugin auto-detects the language in every message (less optimal)
+language: 'all'
+
+# Specify the toxicity types you want to handle
+analyze:
+  # Rude, disrespectful, or unreasonable comment
+  toxicity: true
+  # A very hateful, aggressive, disrespectful comment
+  severe_toxicity: false
+
+  # These are experimental toxicity types that were not 100% proved
+  experimental:
+    # Optimized version of toxicity, can be faster, but less secure
+    toxicity_optimized: false
+    # Negative or hateful comments targeting someone because of their identity.
+    identity_attack: false
+    # Insulting, inflammatory, or negative comment towards a person or a group of people.
+    insult: false
+    # Swear words, curse words, or other obscene or profane language.
+    profanity: false
+    # Describes an intention to inflict pain, injury, or violence against an individual or group.
+    threat: false
+    # Contains references to sexual acts, body parts, or other lewd content.
+    sexually_explicit: false
+    # Pickup lines, complimenting appearance, subtle sexual innuendos, etc.
+    flirtation: false
+    # Irrelevant and unsolicited commercial content.
+    spam: false
+
+languages:
+  - 'en'
+  - 'es'

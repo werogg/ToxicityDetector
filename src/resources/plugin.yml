@@ -1,0 +1,4 @@
+name: ToxicityDetector
+main: es.jotero.toxicitydetector.ToxicityDetector
+version: 1.0
+description: Detect toxicity on user's messages
