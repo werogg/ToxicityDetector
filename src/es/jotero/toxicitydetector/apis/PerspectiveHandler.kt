@@ -11,9 +11,9 @@ import es.jotero.toxicitydetector.utils.ConfigUtil
 class PerspectiveHandler(apikey: String?, configHandler: ConfigHandler) {
 
     // Prespective API instance init
-    val pApi = PerspectiveAPI.create(apikey)
+    private val pApi = PerspectiveAPI.create(apikey)
     // ConfigUtil declaration
-    var configUtil = ConfigUtil(configHandler)
+    private var configUtil = ConfigUtil(configHandler)
 
     /**
      * Get toxicity of [message]
@@ -22,7 +22,7 @@ class PerspectiveHandler(apikey: String?, configHandler: ConfigHandler) {
     fun getToxicity(message: String) : Float {
 
         // Declare the PerspectiveAPI Request Builder
-        var analyzeCommentRequestBuilder = AnalyzeCommentRequest.Builder()
+        val analyzeCommentRequestBuilder = AnalyzeCommentRequest.Builder()
                 .comment(
                         Entry.Builder()
                                 .type(ContentType.PLAIN_TEXT)
@@ -47,7 +47,7 @@ class PerspectiveHandler(apikey: String?, configHandler: ConfigHandler) {
         if (configUtil.isSpamEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.SPAM, null)
 
         // Build and analyze the request
-        var result = pApi.analyze(analyzeCommentRequestBuilder.build())
+        val result = pApi.analyze(analyzeCommentRequestBuilder.build())
 
         // TODO diversify results depending on active attributes
         return result.getAttributeScore(AttributeType.TOXICITY).summaryScore.value

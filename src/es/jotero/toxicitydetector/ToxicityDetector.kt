@@ -8,7 +8,9 @@ import org.bukkit.plugin.java.JavaPlugin
 import java.util.logging.Logger
 
 
-public class ToxicityDetector() : JavaPlugin() {
+class ToxicityDetector() : JavaPlugin() {
+
+    // TODO PlaceHolder API implementations
 
     lateinit var configHandler : ConfigHandler
     lateinit var perspectiveHandler : PerspectiveHandler
@@ -34,7 +36,7 @@ public class ToxicityDetector() : JavaPlugin() {
 
         logger.info("[DEBUG] Plugin loaded correctly!")
 
-        for (language in configHandler.getStringList("languages")) {
+        for (language in configHandler.getStringList("config.yml", "languages")) {
             logger.info(language)
         }
     }
@@ -43,7 +45,7 @@ public class ToxicityDetector() : JavaPlugin() {
      * Init the Perspective API Handler
      */
     private fun initPerspectiveHandler() : Boolean {
-        var apiKey = configHandler.getString("api-key")
+        val apiKey = configHandler.getString("config.yml", "api-key")
 
         if (apiKey.equals("")) return false
 
@@ -57,7 +59,7 @@ public class ToxicityDetector() : JavaPlugin() {
     private fun registerEvents() {
 
         // Register player chat events
-        server.pluginManager.registerEvents(PlayerChattingListener(perspectiveHandler), this)
+        server.pluginManager.registerEvents(PlayerChattingListener(perspectiveHandler, configHandler), this)
     }
 
 }
