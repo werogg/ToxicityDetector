@@ -8,7 +8,7 @@ import au.com.origma.perspectiveapi.v1alpha1.models.Entry
 import es.jotero.toxicitydetector.config.ConfigHandler
 import es.jotero.toxicitydetector.utils.ConfigUtil
 
-class PerspectiveHandler(apikey: String?, var configHandler: ConfigHandler) {
+class PerspectiveHandler(apikey: String?, configHandler: ConfigHandler) {
 
     // Prespective API instance init
     val pApi = PerspectiveAPI.create(apikey)
@@ -31,7 +31,8 @@ class PerspectiveHandler(apikey: String?, var configHandler: ConfigHandler) {
                 )
 
         // Set languages (Multiple lang disabled for Google-PerspectiveAPI-Java-Client issue #3)
-        analyzeCommentRequestBuilder.addLanguage(configUtil.getMainLanguage())
+        if (!configUtil.getMainLanguage().equals("all"))
+            analyzeCommentRequestBuilder.addLanguage(configUtil.getMainLanguage())
 
         // Check enabled attributes for the request
         if (configUtil.isToxicityEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.TOXICITY, null)

@@ -31,7 +31,3 @@ analyze:
     flirtation: false
     # Irrelevant and unsolicited commercial content.
     spam: false
-
-languages:
-  - 'en'
-  - 'es'
