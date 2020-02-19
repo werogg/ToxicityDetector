@@ -15,11 +15,6 @@ class ToxicityDetector() : JavaPlugin() {
     lateinit var configHandler : ConfigHandler
     lateinit var perspectiveHandler : PerspectiveHandler
 
-    // Logger companion
-    companion object {
-        val logger : Logger = Bukkit.getLogger()
-    }
-
     /**
      * Executes on plugin enable
      */
@@ -28,17 +23,15 @@ class ToxicityDetector() : JavaPlugin() {
         configHandler.initConfig()
 
         if (!initPerspectiveHandler()) {
+            logger.info("Disabling $name, Perspective API key is not set")
             pluginLoader.disablePlugin(this)
             return
         }
 
         registerEvents()
 
-        logger.info("[DEBUG] Plugin loaded correctly!")
-
-        for (language in configHandler.getStringList("config.yml", "languages")) {
-            logger.info(language)
-        }
+        logger.info("$name detected Perspective API key correctly, plugin loaded but may not work if the " +
+                "api key is not correct")
     }
 
     /**
