@@ -24,13 +24,14 @@ class PlaceholderAPI(val toxicityDetector: ToxicityDetector, val configHandler: 
         return true
     }
 
+    // TODO Diversify placeholders
     override fun onPlaceholderRequest(player: Player?, identifier: String?): String {
+
         if (player == null) {
             return ""
         }
 
         // TODO Top X toxicity players
-
         if (identifier.equals("player_toxicity")) {
             return configHandler.getPlayerDataConfig().get("${player.uniqueId.toString()}.toxicity", "0").toString()
         }

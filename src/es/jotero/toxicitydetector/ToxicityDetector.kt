@@ -1,6 +1,7 @@
 package es.jotero.toxicitydetector
 
 import es.jotero.toxicitydetector.apis.PerspectiveHandler
+import es.jotero.toxicitydetector.apis.PlaceholderAPI
 import es.jotero.toxicitydetector.chat.PlayerChattingListener
 import es.jotero.toxicitydetector.config.ConfigHandler
 import org.bukkit.Bukkit
@@ -9,8 +10,6 @@ import java.util.logging.Logger
 
 
 class ToxicityDetector() : JavaPlugin() {
-
-    // TODO PlaceHolder API implementations
 
     lateinit var configHandler : ConfigHandler
     lateinit var perspectiveHandler : PerspectiveHandler
@@ -22,11 +21,16 @@ class ToxicityDetector() : JavaPlugin() {
         configHandler = ConfigHandler(this)
         configHandler.initConfig()
 
+        // If api-key is not set, perspective api won't work so we disable the plugin and return the execution of onEnable()
         if (!initPerspectiveHandler()) {
             logger.info("Disabling $name, Perspective API key is not set")
             pluginLoader.disablePlugin(this)
             return
         }
+
+        // If PlaceholderAPI is installed, we load Placeholder compatibility class
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
+            PlaceholderAPI(this, configHandler).register()
 
         registerEvents()
 
