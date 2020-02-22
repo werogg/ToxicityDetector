@@ -11,7 +11,7 @@ import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ConfigHandler (private val plugin: Plugin, private val perspectiveHandler: PerspectiveHandler) {
+class ConfigHandler (private val plugin: Plugin) {
 
     // Config declaration
     private var config = plugin.config
@@ -58,7 +58,7 @@ class ConfigHandler (private val plugin: Plugin, private val perspectiveHandler:
      * @return Boolean value in the config
      */
     fun getBoolean(file : String, path : String) : Boolean {
-        if (file == "playerData.yml")
+        if (file.equals("playerData.yml"))
             return playerDataConfig.getBoolean(path)
         return config.getBoolean(path)
     }
@@ -68,7 +68,7 @@ class ConfigHandler (private val plugin: Plugin, private val perspectiveHandler:
      * @return List of String values in the config
      */
     fun getStringList(file : String, path : String) : MutableList<String> {
-        if (file == "playerData.yml")
+        if (file.equals("playerData.yml"))
             return playerDataConfig.getStringList(path)
         return config.getStringList(path)
     }
@@ -93,7 +93,7 @@ class ConfigHandler (private val plugin: Plugin, private val perspectiveHandler:
      * @param playerUUID
      * @param message message to analyze
      */
-    fun updatePlayerToxicity(playerUUID : UUID, message : String) {
+    fun updatePlayerToxicity(perspectiveHandler : PerspectiveHandler, playerUUID : UUID, message : String) {
         val requestedAttributeTypes = getEnabledAttributeTypes()
         val messageToxicityMap = perspectiveHandler.getToxicityMap(message, requestedAttributeTypes)
 

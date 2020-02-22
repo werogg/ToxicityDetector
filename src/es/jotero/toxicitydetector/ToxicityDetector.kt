@@ -18,17 +18,17 @@ class ToxicityDetector() : JavaPlugin() {
      * Executes on plugin enable
      */
     override fun onEnable() {
+        // perspective handler referenced before init, should be fixed in future
+        configHandler = ConfigHandler(this)
+        configHandler.initConfig()
+
+
         // If api-key is not set, perspective api won't work so we disable the plugin and return the execution of onEnable()
         if (!initPerspectiveHandler()) {
             logger.info("Disabling $name, Perspective API key is not set")
             pluginLoader.disablePlugin(this)
             return
         }
-
-
-        // perspective handler referenced before init, should be fixed in future
-        configHandler = ConfigHandler(this, perspectiveHandler)
-        configHandler.initConfig()
 
         // If PlaceholderAPI is installed, we load Placeholder compatibility class
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
@@ -44,7 +44,7 @@ class ToxicityDetector() : JavaPlugin() {
      * Init the Perspective API Handler
      */
     private fun initPerspectiveHandler() : Boolean {
-        val apiKey = config.getString("config.yml", "api-key")
+        val apiKey = configHandler.getString("config.yml", "api-key")
 
         if (apiKey.equals("")) return false
 
@@ -55,10 +55,10 @@ class ToxicityDetector() : JavaPlugin() {
     /**
      * Register all spigot events
      */
-    private fun registerEvents() {
+    fun registerEvents() {
 
         // Register player chat events
-        server.pluginManager.registerEvents(PlayerChattingListener(configHandler), this)
+        server.pluginManager.registerEvents(PlayerChattingListener(configHandler, perspectiveHandler), this)
     }
 
 }
