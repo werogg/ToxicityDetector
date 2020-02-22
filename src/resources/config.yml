@@ -1,5 +1,7 @@
 api-key: '' # Google Clouds api key for Perspective API
 
+message-weight: 0.8 # The % from 0 to 1 that a message should affect to the global toxicity of a player
+
 # Specify the main language of the server
 # Working languages: English (en), Spanish (es), French (fr)
 # Experimental languages: German (de), Portuguese (pt), Italian(it)

@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerChatEvent
 
-class PlayerChattingListener(var perspectiveHandler: PerspectiveHandler, var configHandler: ConfigHandler) : Listener {
+class PlayerChattingListener(var configHandler: ConfigHandler) : Listener {
 
     var playerDataConfig = configHandler.getPlayerDataConfig()
 
@@ -15,17 +15,9 @@ class PlayerChattingListener(var perspectiveHandler: PerspectiveHandler, var con
      */
     @EventHandler
     fun onPlayerChats(event : AsyncPlayerChatEvent) {
-        val player = event.player
+        val playerUUID = event.player.uniqueId
         val message = event.message
-        val toxicity = perspectiveHandler.getToxicity(message)
-        player.sendMessage("Message Toxicity: $toxicity")
-        val playerUUID = player.uniqueId
-        val old_toxicity = playerDataConfig.getDouble("$playerUUID.toxicity")
-        val new_toxicity = old_toxicity * 0.8 + toxicity * 0.2
-        player.sendMessage("New toxicity level: $new_toxicity")
-
-        playerDataConfig.set("$playerUUID.toxicity", new_toxicity)
-        configHandler.savePlayerDataConfig()
+        configHandler.updatePlayerToxicity(playerUUID, message)
     }
 
 }

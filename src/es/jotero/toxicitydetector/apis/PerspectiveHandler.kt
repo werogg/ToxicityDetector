@@ -12,14 +12,16 @@ class PerspectiveHandler(apikey: String?, configHandler: ConfigHandler) {
 
     // Prespective API instance init
     private val pApi = PerspectiveAPI.create(apikey)
-    // ConfigUtil declaration
+
     private var configUtil = ConfigUtil(configHandler)
 
     /**
      * Get toxicity of [message]
      * @return message's toxicity.
      */
-    fun getToxicity(message: String) : Float {
+    fun getToxicityMap(message: String, requestedAttributeTypes : ArrayList<AttributeType>) : Map<AttributeType, Double> {
+
+        val toxicityMap = mutableMapOf<AttributeType, Double>()
 
         // Declare the PerspectiveAPI Request Builder
         val analyzeCommentRequestBuilder = AnalyzeCommentRequest.Builder()
@@ -34,23 +36,18 @@ class PerspectiveHandler(apikey: String?, configHandler: ConfigHandler) {
         if (!configUtil.getMainLanguage().equals("all"))
             analyzeCommentRequestBuilder.addLanguage(configUtil.getMainLanguage())
 
-        // Check enabled attributes for the request
-        if (configUtil.isToxicityEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.TOXICITY, null)
-        if (configUtil.isSevereToxicityEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.SEVERE_TOXICITY, null)
-        if (configUtil.isToxicityOptimizedEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.TOXICITY_FAST, null)
-        if (configUtil.isIdentityAttackEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.IDENTITY_ATTACK, null)
-        if (configUtil.isInsultEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.INSULT, null)
-        if (configUtil.isProfanityEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.PROFANITY, null)
-        if (configUtil.isThreatEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.THREAT, null)
-        if (configUtil.isSexuallyExplicityEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.SEXUALLY_EXPLICIT, null)
-        if (configUtil.isFlirtationEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.FLIRTATION, null)
-        if (configUtil.isSpamEnabled()) analyzeCommentRequestBuilder.addRequestedAttribute(AttributeType.SPAM, null)
+        for (attributeType in requestedAttributeTypes) {
+            analyzeCommentRequestBuilder.addRequestedAttribute(attributeType, null)
+        }
 
         // Build and analyze the request
         val result = pApi.analyze(analyzeCommentRequestBuilder.build())
 
-        // TODO diversify results depending on active attributes
-        return result.getAttributeScore(AttributeType.TOXICITY).summaryScore.value
+        for (attributeType in requestedAttributeTypes) {
+            toxicityMap[attributeType] = result.getAttributeScore(attributeType).summaryScore.value.toDouble()
+        }
+
+        return toxicityMap
     }
 
 }
