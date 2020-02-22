@@ -3,7 +3,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>es.jotero</groupId>
   <artifactId>ToxicityDetector</artifactId>
-  <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -155,10 +154,10 @@
     </dependency>
   </dependencies>
   <properties>
-    <jdk.version>1.8</jdk.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <kotlin.version>1.3.61</kotlin.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
+    <jdk.version>1.8</jdk.version>
   </properties>
 </project>
 
