@@ -1,19 +1,13 @@
 package es.jotero.toxicitydetector.apis
 
 import au.com.origma.perspectiveapi.v1alpha1.PerspectiveAPI
-import au.com.origma.perspectiveapi.v1alpha1.models.AnalyzeCommentRequest
-import au.com.origma.perspectiveapi.v1alpha1.models.AttributeType
-import au.com.origma.perspectiveapi.v1alpha1.models.ContentType
-import au.com.origma.perspectiveapi.v1alpha1.models.Entry
+import au.com.origma.perspectiveapi.v1alpha1.models.*
 import es.jotero.toxicitydetector.config.ConfigHandler
-import es.jotero.toxicitydetector.utils.ConfigUtil
 
-class PerspectiveHandler(apikey: String?, configHandler: ConfigHandler) {
+class PerspectiveHandler(apikey: String?, private var configHandler: ConfigHandler) {
 
     // Prespective API instance init
     private val pApi = PerspectiveAPI.create(apikey)
-
-    private var configUtil = ConfigUtil(configHandler)
 
     /**
      * Get toxicity of [message]
@@ -33,18 +27,20 @@ class PerspectiveHandler(apikey: String?, configHandler: ConfigHandler) {
                 )
 
         // Set languages (Multiple lang disabled for Google-PerspectiveAPI-Java-Client issue #3)
-        if (!configUtil.getMainLanguage().equals("all"))
-            analyzeCommentRequestBuilder.addLanguage(configUtil.getMainLanguage())
+        if (configHandler.getMainLanguage().equals("all"))
+            analyzeCommentRequestBuilder.addLanguage(configHandler.getMainLanguage())
 
         for (attributeType in requestedAttributeTypes) {
-            analyzeCommentRequestBuilder.addRequestedAttribute(attributeType, null)
+            analyzeCommentRequestBuilder.addRequestedAttribute(attributeType, RequestedAttribute.Builder().build())
         }
 
+        val debug1 = analyzeCommentRequestBuilder.build()
+
         // Build and analyze the request
-        val result = pApi.analyze(analyzeCommentRequestBuilder.build())
+        val result = pApi.analyze(debug1)
 
         for (attributeType in requestedAttributeTypes) {
-            toxicityMap[attributeType] = result.getAttributeScore(attributeType).summaryScore.value.toDouble()
+            toxicityMap.put(attributeType, result.getAttributeScore(attributeType).summaryScore.value.toDouble())
         }
 
         return toxicityMap

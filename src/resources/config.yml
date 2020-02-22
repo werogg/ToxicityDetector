@@ -1,6 +1,7 @@
 api-key: '' # Google Clouds api key for Perspective API
 
 message-weight: 0.8 # The % from 0 to 1 that a message should affect to the global toxicity of a player
+debug: false
 
 # Specify the main language of the server
 # Working languages: English (en), Spanish (es), French (fr)
@@ -13,12 +14,12 @@ analyze:
   # Rude, disrespectful, or unreasonable comment
   toxicity: true
   # A very hateful, aggressive, disrespectful comment
-  severe_toxicity: false
+  severe_toxicity: true
 
   # These are experimental toxicity types that were not 100% proved
   experimental:
     # Optimized version of toxicity, can be faster, but less secure
-    toxicity_optimized: false
+    toxicity_optimized: true
     # Negative or hateful comments targeting someone because of their identity.
     identity_attack: false
     # Insulting, inflammatory, or negative comment towards a person or a group of people.

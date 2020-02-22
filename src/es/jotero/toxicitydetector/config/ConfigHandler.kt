@@ -2,7 +2,7 @@ package es.jotero.toxicitydetector.config
 
 import au.com.origma.perspectiveapi.v1alpha1.models.AttributeType
 import es.jotero.toxicitydetector.apis.PerspectiveHandler
-import es.jotero.toxicitydetector.utils.ConfigUtil
+import org.bukkit.Bukkit
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.Plugin
@@ -93,10 +93,29 @@ class ConfigHandler (private val plugin: Plugin) {
      * @param playerUUID
      * @param message message to analyze
      */
-    fun updatePlayerToxicity(perspectiveHandler : PerspectiveHandler, playerUUID : UUID, message : String) {
-        val requestedAttributeTypes = getEnabledAttributeTypes()
-        val messageToxicityMap = perspectiveHandler.getToxicityMap(message, requestedAttributeTypes)
+    suspend fun updatePlayerToxicity(perspectiveHandler : PerspectiveHandler, playerUUID : UUID, message : String) {
 
+        // TODO SOLVE ASYNC PROBLEM HERE
+        val requestedAttributeTypes = getEnabledAttributeTypes()
+
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
+            kotlin.run {
+                val messageToxicityMap = perspectiveHandler.getToxicityMap(message, requestedAttributeTypes)
+
+
+                Bukkit.getScheduler().runTask(plugin, Runnable {
+                    kotlin.run {
+                        onQueryDone(messageToxicityMap, playerUUID)
+                    }
+                })
+            }
+        })
+
+
+
+    }
+
+    private fun onQueryDone(messageToxicityMap : Map<AttributeType, Double>, playerUUID: UUID) {
         for ((attributeType, toxicityValue) in messageToxicityMap) {
             val path = getAttributeTypePath(playerUUID, attributeType)
 
@@ -142,20 +161,107 @@ class ConfigHandler (private val plugin: Plugin) {
      */
     private fun getEnabledAttributeTypes() : ArrayList<AttributeType> {
         val enabledAttributeTypes = mutableListOf<AttributeType>()
-        val configUtil = ConfigUtil(this)
 
-        if (configUtil.isToxicityEnabled()) enabledAttributeTypes.add(AttributeType.TOXICITY)
-        if (configUtil.isSevereToxicityEnabled()) enabledAttributeTypes.add(AttributeType.SEVERE_TOXICITY)
-        if (configUtil.isToxicityOptimizedEnabled()) enabledAttributeTypes.add(AttributeType.TOXICITY_FAST)
-        if (configUtil.isIdentityAttackEnabled()) enabledAttributeTypes.add(AttributeType.IDENTITY_ATTACK)
-        if (configUtil.isInsultEnabled()) enabledAttributeTypes.add(AttributeType.INSULT)
-        if (configUtil.isProfanityEnabled()) enabledAttributeTypes.add(AttributeType.PROFANITY)
-        if (configUtil.isThreatEnabled()) enabledAttributeTypes.add(AttributeType.THREAT)
-        if (configUtil.isSexuallyExplicityEnabled()) enabledAttributeTypes.add(AttributeType.SEXUALLY_EXPLICIT)
-        if (configUtil.isFlirtationEnabled()) enabledAttributeTypes.add(AttributeType.FLIRTATION)
-        if (configUtil.isSpamEnabled()) enabledAttributeTypes.add(AttributeType.SPAM)
+        if (isToxicityEnabled()) enabledAttributeTypes.add(AttributeType.TOXICITY)
+        if (isSevereToxicityEnabled()) enabledAttributeTypes.add(AttributeType.SEVERE_TOXICITY)
+        if (isToxicityOptimizedEnabled()) enabledAttributeTypes.add(AttributeType.TOXICITY_FAST)
+        if (isIdentityAttackEnabled()) enabledAttributeTypes.add(AttributeType.IDENTITY_ATTACK)
+        if (isInsultEnabled()) enabledAttributeTypes.add(AttributeType.INSULT)
+        if (isProfanityEnabled()) enabledAttributeTypes.add(AttributeType.PROFANITY)
+        if (isThreatEnabled()) enabledAttributeTypes.add(AttributeType.THREAT)
+        if (isSexuallyExplicityEnabled()) enabledAttributeTypes.add(AttributeType.SEXUALLY_EXPLICIT)
+        if (isFlirtationEnabled()) enabledAttributeTypes.add(AttributeType.FLIRTATION)
+        if (isSpamEnabled()) enabledAttributeTypes.add(AttributeType.SPAM)
 
         return enabledAttributeTypes as ArrayList<AttributeType>
+    }
+
+    /**
+     * Check if toxicity is enabled
+     * @return true if enabled
+     */
+    fun isToxicityEnabled(): Boolean {
+        return config.getBoolean("analyze.toxicity")
+    }
+
+    /**
+     * Check if severe toxicity is enabled
+     * @return true if enabled
+     */
+    fun isSevereToxicityEnabled(): Boolean {
+        return config.getBoolean("analyze.severe_toxicity")
+    }
+
+    /**
+     * Check if toxicity optimized is enabled
+     * @return true if enabled
+     */
+    fun isToxicityOptimizedEnabled(): Boolean {
+        return config.getBoolean("analyze.experimental.toxicity_optimized")
+    }
+
+    /**
+     * Check if identity attack is enabled
+     * @return true if enabled
+     */
+    fun isIdentityAttackEnabled(): Boolean {
+        return config.getBoolean("analyze.experimental.identity_attack")
+    }
+
+    /**
+     * Check if insult is enabled
+     * @return true if enabled
+     */
+    fun isInsultEnabled(): Boolean {
+        return config.getBoolean("analyze.experimental.insult")
+    }
+
+    /**
+     * Check if profanity is enabled
+     * @return true if enabled
+     */
+    fun isProfanityEnabled(): Boolean {
+        return config.getBoolean("analyze.experimental.profanity")
+    }
+
+    /**
+     * Check if threat is enabled
+     * @return true if enabled
+     */
+    fun isThreatEnabled(): Boolean {
+        return config.getBoolean("analyze.experimental.threat")
+    }
+
+    /**
+     * Check if sexually explicit is enabled
+     * @return true if enabled
+     */
+    fun isSexuallyExplicityEnabled(): Boolean {
+        return config.getBoolean("analyze.experimental.sexually_explicit")
+    }
+
+    /**
+     * Check if flirtation is enabled
+     * @return true if enabled
+     */
+    fun isFlirtationEnabled(): Boolean {
+        return config.getBoolean("analyze.experimental.flirtation")
+    }
+
+    /**
+     * Check if spam is enabled
+     * @return true if enabled
+     */
+    fun isSpamEnabled(): Boolean {
+        return config.getBoolean("analyze.experimental.spam")
+    }
+
+    /**
+     * Get the main language set on config
+     * @return the main language if set
+     */
+    fun getMainLanguage() : String? {
+        return config.getString("language")
     }
 
 }
