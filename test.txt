@@ -1,7 +1,9 @@
 main(qfqwfqwf) {
 
 	fulanito
+	samuillo
 	fulanita
+	joelillo
 	blablable
 	blablabla
 
